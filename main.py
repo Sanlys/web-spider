@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup as bs
+from urllib.parse import urlparse
 
 rootURL = "https://www.youtube.com"
+rootDomain = urlparse(rootURL).netloc
 
 def urlNotExists(url):
 		with open('urls.txt', 'r+') as f:
@@ -13,29 +15,30 @@ f = open('urls.txt', 'r+')
 for url in f:
 	try:
 		r = requests.get(url)
+		parsed = bs(r.text, "html.parser")
 	except:
 		continue
-	if(r.status_code == 200):
-		parsed = bs(r.text, features="lxml")
-	else:
-		continue
 
-	x = []
+	#x = []
 
+	file = open('urls.txt', 'a')
 	for a in parsed.find_all('a', href=True):
-		x.append(a['href'])
-	y = []
-	for i in x:
+		#x.append(a['href'])
+		domain = urlparse(a['href']).netloc
+		if(domain == rootDomain):
+			file.write(a['href'] + '\n')
+
+	#y = []
+	#for i in x:
 	#	if(i[0] == "/"):
 	#		y.append(rootURL + i)
 	#	else:
-		y.append(i)	
+		#y.append(i)	
 
 
-	file = open('urls.txt', 'a')
+	#file = open('urls.txt', 'a')
 
-	for i in y:
-		temp = (i + '\n')
-		if(urlNotExists(temp)):
-			file.write(temp)
-			print(temp)
+	#for i in y:
+		#if(urlNotExists(i)):
+			#file.write(i)
+			#print(i)
